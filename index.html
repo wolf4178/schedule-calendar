@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Enhanced Daily Timetable Calendar</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 10px;
+    max-width: 700px;
+    margin: auto;
+    background: #f9f9f9;
+  }
+  h1 {
+    text-align: center;
+  }
+  #dateSelector {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  .timetable {
+    display: grid;
+    grid-template-columns: 80px 1fr 120px 100px;
+    gap: 5px 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #ccc;
+  }
+  .time-label {
+    font-weight: bold;
+    background: #efefef;
+    text-align: center;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  textarea {
+    resize: none;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 100%;
+    height: 50px;
+    font-family: Arial, sans-serif;
+  }
+  select {
+    font-size: 14px;
+    padding: 6px 8px;
+    border-radius: 4px;
+  }
+  button {
+    margin-top: 12px;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  #saveMsg {
+    text-align: center;
+    margin-top: 8px;
+    color: green;
+    font-weight: bold;
+  }
+  .category-blue { background-color: #cce5ff; }
+  .category-green { background-color: #d4edda; }
+  .category-yellow { background-color: #fff3cd; }
+  .category-red { background-color: #f8d7da; }
+</style>
+</head>
+<body>
+<h1>Enhanced Daily Timetable Calendar</h1>
+<div id="dateSelector">
+  <label for="selectedDate">Select Date: </label>
+  <input type="date" id="selectedDate" />
+</div>
+<div class="timetable" id="timetable">
+  <!-- Time slots inserted by JS -->
+</div>
+<button id="saveBtn">Save Schedule</button>
+<div id="saveMsg"></div>
+
+<script>
+  const timetable = document.getElementById("timetable");
+  const saveBtn = document.getElementById("saveBtn");
+  const saveMsg = document.getElementById("saveMsg");
+  const selectedDateInput = document.getElementById("selectedDate");
+
+  const startHour = 6;
+  const endHour = 22;
+
+  // Categories (color-coded)
+  const categories = [
+    { id: 'none', label: 'No Category', className: '' },
+    { id: 'blue', label: 'Work', className: 'category-blue' },
+    { id: 'green', label: 'Personal', className: 'category-green' },
+    { id: 'yellow', label: 'Important', className: 'category-yellow' },
+    { id: 'red', label: 'Urgent', className: 'category-red' }
+  ];
+
+  // Get today's date as default
+  function formatDate(date){
+    return date.toISOString().split('T')[0];
+  }
+  selectedDateInput.value = formatDate(new Date());
+
+  // Schedule data structure: { date: {hour: {text, category, recurring}} }
+  let schedule = JSON.parse(localStorage.getItem("dailySchedule")) || {};
+
+  function formatHour(hour) {
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const h = hour % 12 || 12;
+    return h + ' ' + ampm;
+  }
+
+  function createTimetable(date) {
+    timetable.innerHTML = "";
+    for (let hour = startHour; hour <= endHour; hour++) {
+      const timeLabel = document.createElement('div');
+      timeLabel.className = 'time-label';
+      timeLabel.textContent = formatHour(hour);
+
+      const textArea = document.createElement('textarea');
+      textArea.placeholder = "Enter schedule for " + formatHour(hour);
+      textArea.id = `text-${date}-${hour}`;
+
+      const categorySelect = document.createElement('select');
+      categorySelect.id = `cat-${date}-${hour}`;
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.label;
+        categorySelect.appendChild(option);
+      });
+
+      const recurringCheckbox = document.createElement('input');
+      recurringCheckbox.type = 'checkbox';
+      recurringCheckbox.id = `recurring-${date}-${hour}`;
+      const recurringLabel = document.createElement('label');
+      recurringLabel.htmlFor = recurringCheckbox.id;
+      recurringLabel.textContent = 'Repeat daily';
+
+      // Load previous data if available
+      if (schedule[date] && schedule[date][hour]) {
+        const entry = schedule[date][hour];
+        textArea.value = entry.text || '';
+        categorySelect.value = entry.category || 'none';
+        recurringCheckbox.checked = !!entry.recurring;
+      }
+
+      // Change background color based on category
+      function updateCategoryColor() {
+        textArea.className = categories.find(cat => cat.id === categorySelect.value)?.className || '';
+      }
+      categorySelect.addEventListener('change', updateCategoryColor);
+      updateCategoryColor();
+
+      timetable.appendChild(timeLabel);
+      timetable.appendChild(textArea);
+      timetable.appendChild(categorySelect);
+
+      const recurringDiv = document.createElement('div');
+      recurringDiv.style.display = 'flex';
+      recurringDiv.style.alignItems = 'center';
+      recurringDiv.style.justifyContent = 'center';
+      recurringDiv.appendChild(recurringCheckbox);
+      recurringDiv.appendChild(recurringLabel);
+      timetable.appendChild(recurringDiv);
+    }
+  }
+
+  function saveSchedule() {
+    const date = selectedDateInput.value;
+    if (!schedule[date]) schedule[date] = {};
+    for (let hour = startHour; hour <= endHour; hour++) {
+      const text = document.getElementById(`text-${date}-${hour}`).value.trim();
+      const category = document.getElementById(`cat-${date}-${hour}`).value;
+      const recurring = document.getElementById(`recurring-${date}-${hour}`).checked;
+      if (text) {
+        schedule[date][hour] = { text, category, recurring };
+      } else {
+        delete schedule[date][hour];
+      }
+    }
+    localStorage.setItem("dailySchedule", JSON.stringify(schedule));
+    saveMsg.textContent = "Schedule saved successfully!";
+    setTimeout(() => saveMsg.textContent = "", 3000);
+  }
+
+  function applyRecurringEvents(date) {
+    // Check all previous days and apply recurring events to this date
+    const keys = Object.keys(schedule).sort();
+    if (!schedule[date]) schedule[date] = {};
+    keys.forEach(d => {
+      if (d >= date) return; // only previous dates
+      Object.entries(schedule[d]).forEach(([hour, event]) => {
+        if (event.recurring && (!schedule[date][hour] || !schedule[date][hour].text)) {
+          schedule[date][hour] = { ...event };
+        }
+      });
+    });
+  }
+
+  function checkReminders() {
+    const now = new Date();
+    const date = formatDate(now);
+    const hour = now.getHours();
+    if (schedule[date] && schedule[date][hour] && schedule[date][hour].text) {
+      alert(`Reminder: ${schedule[date][hour].text} (at ${formatHour(hour)})`);
+    }
+  }
+
+  selectedDateInput.addEventListener("change", () => {
+    applyRecurringEvents(selectedDateInput.value);
+    createTimetable(selectedDateInput.value);
+  });
+
+  saveBtn.addEventListener("click", saveSchedule);
+
+  // Initialize
+  applyRecurringEvents(selectedDateInput.value);
+  createTimetable(selectedDateInput.value);
+
+  // Check reminders every 5 minutes
+  setInterval(checkReminders, 300000); // 300000 ms = 5 mins
+</script>
+</body>
+</html>
