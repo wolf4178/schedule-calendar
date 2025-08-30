@@ -1,236 +1,180 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Enhanced Daily Timetable Calendar</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    padding: 10px;
-    max-width: 700px;
-    margin: auto;
-    background: #f9f9f9;
-  }
-  h1 {
-    text-align: center;
-  }
-  #dateSelector {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  .timetable {
-    display: grid;
-    grid-template-columns: 80px 1fr 120px 100px;
-    gap: 5px 10px;
-    background: white;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 8px #ccc;
-  }
-  .time-label {
-    font-weight: bold;
-    background: #efefef;
-    text-align: center;
-    padding: 8px;
-    border-radius: 4px;
-  }
-  textarea {
-    resize: none;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    width: 100%;
-    height: 50px;
-    font-family: Arial, sans-serif;
-  }
-  select {
-    font-size: 14px;
-    padding: 6px 8px;
-    border-radius: 4px;
-  }
-  button {
-    margin-top: 12px;
-    width: 100%;
-    padding: 10px;
-    font-size: 16px;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  button:hover {
-    background: #0056b3;
-  }
-  #saveMsg {
-    text-align: center;
-    margin-top: 8px;
-    color: green;
-    font-weight: bold;
-  }
-  .category-blue { background-color: #cce5ff; }
-  .category-green { background-color: #d4edda; }
-  .category-yellow { background-color: #fff3cd; }
-  .category-red { background-color: #f8d7da; }
-</style>
+  <meta charset="UTF-8">
+  <title>FlowSavvy Clone (Full Features)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: Arial, sans-serif; background: #f5f7fb; margin: 0; padding: 0; }
+    header { background: #4f46e5; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
+    .container { display: flex; gap: 1rem; padding: 1rem; flex-wrap: wrap; }
+    .tasks, .calendar { flex: 1; min-width: 300px; background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
+    h2 { margin-top: 0; }
+    input, button, select { padding: .5rem; margin-top: .5rem; }
+    ul { list-style: none; padding: 0; }
+    li { padding: .5rem; margin: .3rem 0; background: #e0e7ff; border-radius: 6px; cursor: grab; }
+    .calendar-day { border: 1px dashed #ccc; min-height: 100px; padding: .5rem; margin-bottom: .5rem; border-radius: 8px; background: #fafafa; }
+    .priority-high { background: #fca5a5 !important; }
+    .completed { text-decoration: line-through; opacity: 0.6; }
+    .day-header { display:flex; justify-content:space-between; }
+  </style>
 </head>
 <body>
-<h1>Enhanced Daily Timetable Calendar</h1>
-<div id="dateSelector">
-  <label for="selectedDate">Select Date: </label>
-  <input type="date" id="selectedDate" />
-</div>
-<div class="timetable" id="timetable">
-  <!-- Time slots inserted by JS -->
-</div>
-<button id="saveBtn">Save Schedule</button>
-<div id="saveMsg"></div>
+  <header>FlowSavvy Clone – All Features</header>
+  <div class="container">
+    <div class="tasks">
+      <h2>Add Task</h2>
+      <input id="taskInput" type="text" placeholder="New task"><br>
+      <label>Priority:</label>
+      <select id="priority">
+        <option value="normal">Normal</option>
+        <option value="high">High</option>
+      </select><br>
+      <label>Recurring:</label>
+      <select id="recurring">
+        <option value="none">None</option>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+      </select><br>
+      <button onclick="addTask()">Add Task</button>
+      <h2>Unscheduled Tasks</h2>
+      <ul id="taskList"></ul>
+    </div>
+    <div class="calendar">
+      <h2>Calendar</h2>
+      <div id="calendar"></div>
+    </div>
+  </div>
 
-<script>
-  const timetable = document.getElementById("timetable");
-  const saveBtn = document.getElementById("saveBtn");
-  const saveMsg = document.getElementById("saveMsg");
-  const selectedDateInput = document.getElementById("selectedDate");
+  <script>
+    const taskList = document.getElementById("taskList");
+    const calendar = document.getElementById("calendar");
+    const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+    let todayIndex = new Date().getDay()-1; // 0=Mon
+    if(todayIndex < 0) todayIndex = 6;
 
-  const startHour = 6;
-  const endHour = 22;
-
-  // Categories (color-coded)
-  const categories = [
-    { id: 'none', label: 'No Category', className: '' },
-    { id: 'blue', label: 'Work', className: 'category-blue' },
-    { id: 'green', label: 'Personal', className: 'category-green' },
-    { id: 'yellow', label: 'Important', className: 'category-yellow' },
-    { id: 'red', label: 'Urgent', className: 'category-red' }
-  ];
-
-  // Get today's date as default
-  function formatDate(date){
-    return date.toISOString().split('T')[0];
-  }
-  selectedDateInput.value = formatDate(new Date());
-
-  // Schedule data structure: { date: {hour: {text, category, recurring}} }
-  let schedule = JSON.parse(localStorage.getItem("dailySchedule")) || {};
-
-  function formatHour(hour) {
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    const h = hour % 12 || 12;
-    return h + ' ' + ampm;
-  }
-
-  function createTimetable(date) {
-    timetable.innerHTML = "";
-    for (let hour = startHour; hour <= endHour; hour++) {
-      const timeLabel = document.createElement('div');
-      timeLabel.className = 'time-label';
-      timeLabel.textContent = formatHour(hour);
-
-      const textArea = document.createElement('textarea');
-      textArea.placeholder = "Enter schedule for " + formatHour(hour);
-      textArea.id = `text-${date}-${hour}`;
-
-      const categorySelect = document.createElement('select');
-      categorySelect.id = `cat-${date}-${hour}`;
-      categories.forEach(cat => {
-        const option = document.createElement('option');
-        option.value = cat.id;
-        option.textContent = cat.label;
-        categorySelect.appendChild(option);
+    // Build 7-day calendar
+    function buildCalendar(){
+      calendar.innerHTML="";
+      days.forEach((day,i)=>{
+        let div = document.createElement("div");
+        div.className = "calendar-day";
+        div.dataset.day = i;
+        div.innerHTML = `<div class="day-header"><strong>${day}</strong><small>${i===todayIndex?"Today":""}</small></div>`;
+        div.ondragover = ev => ev.preventDefault();
+        div.ondrop = ev => {
+          const id = ev.dataTransfer.getData("id");
+          div.appendChild(document.getElementById(id));
+          saveData();
+        }
+        calendar.appendChild(div);
       });
-
-      const recurringCheckbox = document.createElement('input');
-      recurringCheckbox.type = 'checkbox';
-      recurringCheckbox.id = `recurring-${date}-${hour}`;
-      const recurringLabel = document.createElement('label');
-      recurringLabel.htmlFor = recurringCheckbox.id;
-      recurringLabel.textContent = 'Repeat daily';
-
-      // Load previous data if available
-      if (schedule[date] && schedule[date][hour]) {
-        const entry = schedule[date][hour];
-        textArea.value = entry.text || '';
-        categorySelect.value = entry.category || 'none';
-        recurringCheckbox.checked = !!entry.recurring;
-      }
-
-      // Change background color based on category
-      function updateCategoryColor() {
-        textArea.className = categories.find(cat => cat.id === categorySelect.value)?.className || '';
-      }
-      categorySelect.addEventListener('change', updateCategoryColor);
-      updateCategoryColor();
-
-      timetable.appendChild(timeLabel);
-      timetable.appendChild(textArea);
-      timetable.appendChild(categorySelect);
-
-      const recurringDiv = document.createElement('div');
-      recurringDiv.style.display = 'flex';
-      recurringDiv.style.alignItems = 'center';
-      recurringDiv.style.justifyContent = 'center';
-      recurringDiv.appendChild(recurringCheckbox);
-      recurringDiv.appendChild(recurringLabel);
-      timetable.appendChild(recurringDiv);
     }
-  }
 
-  function saveSchedule() {
-    const date = selectedDateInput.value;
-    if (!schedule[date]) schedule[date] = {};
-    for (let hour = startHour; hour <= endHour; hour++) {
-      const text = document.getElementById(`text-${date}-${hour}`).value.trim();
-      const category = document.getElementById(`cat-${date}-${hour}`).value;
-      const recurring = document.getElementById(`recurring-${date}-${hour}`).checked;
-      if (text) {
-        schedule[date][hour] = { text, category, recurring };
-      } else {
-        delete schedule[date][hour];
-      }
+    function addTask(name,prio,recurring,completed,id){
+      name = name || document.getElementById("taskInput").value;
+      if(!name) return alert("Enter a task!");
+      prio = prio || document.getElementById("priority").value;
+      recurring = recurring || document.getElementById("recurring").value;
+      id = id || "task"+Date.now();
+      let li = document.createElement("li");
+      li.id = id;
+      li.draggable = true;
+      li.ondragstart = ev => ev.dataTransfer.setData("id", li.id);
+      li.onclick = () => { li.classList.toggle("completed"); saveData(); };
+      li.innerHTML = name + 
+        (prio==="high" ? " ⭐" : "") + 
+        (recurring!=="none" ? " 🔁"+recurring : "");
+      if(prio==="high") li.classList.add("priority-high");
+      if(completed) li.classList.add("completed");
+      taskList.appendChild(li);
+      document.getElementById("taskInput").value = "";
+      saveData();
     }
-    localStorage.setItem("dailySchedule", JSON.stringify(schedule));
-    saveMsg.textContent = "Schedule saved successfully!";
-    setTimeout(() => saveMsg.textContent = "", 3000);
-  }
 
-  function applyRecurringEvents(date) {
-    // Check all previous days and apply recurring events to this date
-    const keys = Object.keys(schedule).sort();
-    if (!schedule[date]) schedule[date] = {};
-    keys.forEach(d => {
-      if (d >= date) return; // only previous dates
-      Object.entries(schedule[d]).forEach(([hour, event]) => {
-        if (event.recurring && (!schedule[date][hour] || !schedule[date][hour].text)) {
-          schedule[date][hour] = { ...event };
+    // Save state
+    function saveData(){
+      let data = {
+        tasks: taskList.innerHTML,
+        calendar: calendar.innerHTML,
+        today: todayIndex,
+        timestamp: Date.now()
+      };
+      localStorage.setItem("flowSavvyFull", JSON.stringify(data));
+    }
+
+    // Load state
+    function loadData(){
+      let data = localStorage.getItem("flowSavvyFull");
+      if(!data) return;
+      data = JSON.parse(data);
+      taskList.innerHTML = data.tasks;
+      calendar.innerHTML = data.calendar;
+      todayIndex = data.today;
+      rebindEvents();
+    }
+
+    function rebindEvents(){
+      [...document.querySelectorAll("li")].forEach(li=>{
+        li.draggable = true;
+        li.ondragstart = ev => ev.dataTransfer.setData("id", li.id);
+        li.onclick = () => { li.classList.toggle("completed"); saveData(); };
+      });
+      [...document.querySelectorAll(".calendar-day")].forEach(div=>{
+        div.ondragover = ev => ev.preventDefault();
+        div.ondrop = ev => {
+          const id = ev.dataTransfer.getData("id");
+          div.appendChild(document.getElementById(id));
+          saveData();
         }
       });
-    });
-  }
-
-  function checkReminders() {
-    const now = new Date();
-    const date = formatDate(now);
-    const hour = now.getHours();
-    if (schedule[date] && schedule[date][hour] && schedule[date][hour].text) {
-      alert(`Reminder: ${schedule[date][hour].text} (at ${formatHour(hour)})`);
     }
-  }
 
-  selectedDateInput.addEventListener("change", () => {
-    applyRecurringEvents(selectedDateInput.value);
-    createTimetable(selectedDateInput.value);
-  });
+    // Auto-reschedule unfinished tasks
+    function autoReschedule(){
+      let currentDay = new Date().getDay()-1; 
+      if(currentDay<0) currentDay=6;
+      if(currentDay !== todayIndex){
+        // move uncompleted tasks from yesterday forward
+        [...document.querySelectorAll(".calendar-day")].forEach((dayDiv,i)=>{
+          [...dayDiv.querySelectorAll("li")].forEach(li=>{
+            if(!li.classList.contains("completed")){
+              // if recurring daily, clone task
+              if(li.innerHTML.includes("🔁daily")){
+                let clone = li.cloneNode(true);
+                clone.id = "task"+Date.now();
+                clone.onclick = () => { clone.classList.toggle("completed"); saveData(); };
+                clone.draggable = true;
+                clone.ondragstart = ev => ev.dataTransfer.setData("id", clone.id);
+                getDayDiv(currentDay).appendChild(clone);
+              }
+              // if recurring weekly, only reschedule after 7 days
+              else if(li.innerHTML.includes("🔁weekly") && (todayIndex+7)%7===currentDay){
+                let clone = li.cloneNode(true);
+                clone.id = "task"+Date.now();
+                clone.onclick = () => { clone.classList.toggle("completed"); saveData(); };
+                clone.draggable = true;
+                clone.ondragstart = ev => ev.dataTransfer.setData("id", clone.id);
+                getDayDiv(currentDay).appendChild(clone);
+              } else {
+                // move to today
+                getDayDiv(currentDay).appendChild(li);
+              }
+            }
+          });
+        });
+        todayIndex = currentDay;
+        saveData();
+      }
+    }
 
-  saveBtn.addEventListener("click", saveSchedule);
+    function getDayDiv(idx){
+      return document.querySelector(`.calendar-day[data-day='${idx}']`);
+    }
 
-  // Initialize
-  applyRecurringEvents(selectedDateInput.value);
-  createTimetable(selectedDateInput.value);
-
-  // Check reminders every 5 minutes
-  setInterval(checkReminders, 300000); // 300000 ms = 5 mins
-</script>
+    buildCalendar();
+    loadData();
+    autoReschedule();
+  </script>
 </body>
 </html>
