@@ -1,180 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>FlowSavvy Clone (Full Features)</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { font-family: Arial, sans-serif; background: #f5f7fb; margin: 0; padding: 0; }
-    header { background: #4f46e5; color: white; padding: 1rem; text-align: center; font-size: 1.5rem; }
-    .container { display: flex; gap: 1rem; padding: 1rem; flex-wrap: wrap; }
-    .tasks, .calendar { flex: 1; min-width: 300px; background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-    h2 { margin-top: 0; }
-    input, button, select { padding: .5rem; margin-top: .5rem; }
-    ul { list-style: none; padding: 0; }
-    li { padding: .5rem; margin: .3rem 0; background: #e0e7ff; border-radius: 6px; cursor: grab; }
-    .calendar-day { border: 1px dashed #ccc; min-height: 100px; padding: .5rem; margin-bottom: .5rem; border-radius: 8px; background: #fafafa; }
-    .priority-high { background: #fca5a5 !important; }
-    .completed { text-decoration: line-through; opacity: 0.6; }
-    .day-header { display:flex; justify-content:space-between; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Syllabus & Practice Tracker</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f9f9f9;
+    margin: 0; padding: 20px;
+    color: #333;
+  }
+  h1, h2 {
+    text-align: center;
+  }
+  .container {
+    max-width: 600px;
+    margin: auto;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
+    padding: 20px;
+  }
+  h3 {
+    margin-top: 30px;
+    border-bottom: 2px solid #4CAF50;
+    padding-bottom: 5px;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+  }
+  label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  input[type="checkbox"] {
+    margin-right: 15px;
+    width: 18px;
+    height: 18px;
+  }
+  .progress-bar {
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 10px;
+    margin: 10px 0 20px;
+    height: 16px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background-color: #4CAF50;
+    width: 0%;
+    transition: width 0.5s ease-in-out;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 0.9em;
+    color: #666;
+  }
+</style>
 </head>
 <body>
-  <header>FlowSavvy Clone – All Features</header>
   <div class="container">
-    <div class="tasks">
-      <h2>Add Task</h2>
-      <input id="taskInput" type="text" placeholder="New task"><br>
-      <label>Priority:</label>
-      <select id="priority">
-        <option value="normal">Normal</option>
-        <option value="high">High</option>
-      </select><br>
-      <label>Recurring:</label>
-      <select id="recurring">
-        <option value="none">None</option>
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-      </select><br>
-      <button onclick="addTask()">Add Task</button>
-      <h2>Unscheduled Tasks</h2>
-      <ul id="taskList"></ul>
+    <h1>My Syllabus & Practice Tracker</h1>
+    
+    <h2>Syllabus Completion</h2>
+    <div id="syllabusSection">
+      <ul id="syllabusList">
+        <li><label><input type="checkbox" onchange="updateProgress()"> Topic 1: Introduction to Agriculture</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Topic 2: Plant Biology Basics</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Topic 3: Soil and its Types</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Topic 4: Crop Production Fundamentals</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Topic 5: Pest Management</label></li>
+      </ul>
+      <div class="progress-bar">
+        <div id="syllabusProgress" class="progress-bar-fill"></div>
+      </div>
+      <p id="syllabusPercent">Completion: 0%</p>
     </div>
-    <div class="calendar">
-      <h2>Calendar</h2>
-      <div id="calendar"></div>
+    
+    <h2>Practice Tracker</h2>
+    <div id="practiceSection">
+      <ul id="practiceList">
+        <li><label><input type="checkbox" onchange="updateProgress()"> Practice: Mock Test 1</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Practice: Mock Test 2</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Practice: Problem Solving Exercise</label></li>
+        <li><label><input type="checkbox" onchange="updateProgress()"> Practice: Revision Quiz</label></li>
+      </ul>
+      <div class="progress-bar">
+        <div id="practiceProgress" class="progress-bar-fill"></div>
+      </div>
+      <p id="practicePercent">Completion: 0%</p>
     </div>
   </div>
 
-  <script>
-    const taskList = document.getElementById("taskList");
-    const calendar = document.getElementById("calendar");
-    const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-    let todayIndex = new Date().getDay()-1; // 0=Mon
-    if(todayIndex < 0) todayIndex = 6;
+<script>
+  function updateProgress() {
+    // Update syllabus progress
+    const syllabusItems = document.querySelectorAll('#syllabusList input[type="checkbox"]');
+    let completedSyllabus = 0;
+    syllabusItems.forEach(item => { if(item.checked) completedSyllabus++; });
+    const syllabusPercent = Math.round((completedSyllabus / syllabusItems.length) * 100);
+    document.getElementById('syllabusProgress').style.width = syllabusPercent + '%';
+    document.getElementById('syllabusPercent').textContent = `Completion: ${syllabusPercent}%`;
 
-    // Build 7-day calendar
-    function buildCalendar(){
-      calendar.innerHTML="";
-      days.forEach((day,i)=>{
-        let div = document.createElement("div");
-        div.className = "calendar-day";
-        div.dataset.day = i;
-        div.innerHTML = `<div class="day-header"><strong>${day}</strong><small>${i===todayIndex?"Today":""}</small></div>`;
-        div.ondragover = ev => ev.preventDefault();
-        div.ondrop = ev => {
-          const id = ev.dataTransfer.getData("id");
-          div.appendChild(document.getElementById(id));
-          saveData();
-        }
-        calendar.appendChild(div);
-      });
-    }
+    // Update practice progress
+    const practiceItems = document.querySelectorAll('#practiceList input[type="checkbox"]');
+    let completedPractice = 0;
+    practiceItems.forEach(item => { if(item.checked) completedPractice++; });
+    const practicePercent = Math.round((completedPractice / practiceItems.length) * 100);
+    document.getElementById('practiceProgress').style.width = practicePercent + '%';
+    document.getElementById('practicePercent').textContent = `Completion: ${practicePercent}%`;
+  }
 
-    function addTask(name,prio,recurring,completed,id){
-      name = name || document.getElementById("taskInput").value;
-      if(!name) return alert("Enter a task!");
-      prio = prio || document.getElementById("priority").value;
-      recurring = recurring || document.getElementById("recurring").value;
-      id = id || "task"+Date.now();
-      let li = document.createElement("li");
-      li.id = id;
-      li.draggable = true;
-      li.ondragstart = ev => ev.dataTransfer.setData("id", li.id);
-      li.onclick = () => { li.classList.toggle("completed"); saveData(); };
-      li.innerHTML = name + 
-        (prio==="high" ? " ⭐" : "") + 
-        (recurring!=="none" ? " 🔁"+recurring : "");
-      if(prio==="high") li.classList.add("priority-high");
-      if(completed) li.classList.add("completed");
-      taskList.appendChild(li);
-      document.getElementById("taskInput").value = "";
-      saveData();
-    }
-
-    // Save state
-    function saveData(){
-      let data = {
-        tasks: taskList.innerHTML,
-        calendar: calendar.innerHTML,
-        today: todayIndex,
-        timestamp: Date.now()
-      };
-      localStorage.setItem("flowSavvyFull", JSON.stringify(data));
-    }
-
-    // Load state
-    function loadData(){
-      let data = localStorage.getItem("flowSavvyFull");
-      if(!data) return;
-      data = JSON.parse(data);
-      taskList.innerHTML = data.tasks;
-      calendar.innerHTML = data.calendar;
-      todayIndex = data.today;
-      rebindEvents();
-    }
-
-    function rebindEvents(){
-      [...document.querySelectorAll("li")].forEach(li=>{
-        li.draggable = true;
-        li.ondragstart = ev => ev.dataTransfer.setData("id", li.id);
-        li.onclick = () => { li.classList.toggle("completed"); saveData(); };
-      });
-      [...document.querySelectorAll(".calendar-day")].forEach(div=>{
-        div.ondragover = ev => ev.preventDefault();
-        div.ondrop = ev => {
-          const id = ev.dataTransfer.getData("id");
-          div.appendChild(document.getElementById(id));
-          saveData();
-        }
-      });
-    }
-
-    // Auto-reschedule unfinished tasks
-    function autoReschedule(){
-      let currentDay = new Date().getDay()-1; 
-      if(currentDay<0) currentDay=6;
-      if(currentDay !== todayIndex){
-        // move uncompleted tasks from yesterday forward
-        [...document.querySelectorAll(".calendar-day")].forEach((dayDiv,i)=>{
-          [...dayDiv.querySelectorAll("li")].forEach(li=>{
-            if(!li.classList.contains("completed")){
-              // if recurring daily, clone task
-              if(li.innerHTML.includes("🔁daily")){
-                let clone = li.cloneNode(true);
-                clone.id = "task"+Date.now();
-                clone.onclick = () => { clone.classList.toggle("completed"); saveData(); };
-                clone.draggable = true;
-                clone.ondragstart = ev => ev.dataTransfer.setData("id", clone.id);
-                getDayDiv(currentDay).appendChild(clone);
-              }
-              // if recurring weekly, only reschedule after 7 days
-              else if(li.innerHTML.includes("🔁weekly") && (todayIndex+7)%7===currentDay){
-                let clone = li.cloneNode(true);
-                clone.id = "task"+Date.now();
-                clone.onclick = () => { clone.classList.toggle("completed"); saveData(); };
-                clone.draggable = true;
-                clone.ondragstart = ev => ev.dataTransfer.setData("id", clone.id);
-                getDayDiv(currentDay).appendChild(clone);
-              } else {
-                // move to today
-                getDayDiv(currentDay).appendChild(li);
-              }
-            }
-          });
-        });
-        todayIndex = currentDay;
-        saveData();
-      }
-    }
-
-    function getDayDiv(idx){
-      return document.querySelector(`.calendar-day[data-day='${idx}']`);
-    }
-
-    buildCalendar();
-    loadData();
-    autoReschedule();
-  </script>
+  // Initialize progress bars on load
+  window.onload = updateProgress;
+</script>
 </body>
 </html>
