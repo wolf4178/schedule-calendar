@@ -3,42 +3,44 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>My Syllabus & Practice Tracker</title>
+<title>Syllabus & Practice Tracker</title>
 <style>
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f9f9f9;
+    font-family: Arial, sans-serif;
+    background: #f0f4f8;
     margin: 0; padding: 20px;
     color: #333;
   }
-  h1, h2 {
-    text-align: center;
-  }
   .container {
     max-width: 700px;
-    margin: auto;
+    margin: 0 auto;
     background: white;
+    padding: 25px 30px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgb(0 0 0 / 0.1);
-    padding: 20px;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+  }
+  h1, h2 {
+    text-align: center;
+    color: #2c3e50;
   }
   h3 {
+    color: #27ae60;
     margin-top: 30px;
-    border-bottom: 2px solid #4CAF50;
-    padding-bottom: 5px;
+    border-bottom: 2px solid #27ae60;
+    padding-bottom: 6px;
   }
   ul {
-    list-style: none;
+    list-style-type: none;
     padding-left: 0;
   }
   li {
     padding: 8px 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #dfe6e9;
   }
   label {
-    cursor: pointer;
     display: flex;
     align-items: center;
+    cursor: pointer;
   }
   input[type="checkbox"] {
     margin-right: 15px;
@@ -47,23 +49,23 @@
   }
   .progress-bar {
     width: 100%;
-    background-color: #ddd;
+    height: 18px;
+    background: #dcdde1;
     border-radius: 10px;
-    margin: 10px 0 20px;
-    height: 16px;
     overflow: hidden;
+    margin: 15px 0 8px;
   }
   .progress-bar-fill {
     height: 100%;
-    background-color: #4CAF50;
+    background: #27ae60;
     width: 0%;
-    transition: width 0.5s ease-in-out;
+    transition: width 0.4s ease;
   }
-  .footer {
-    text-align: center;
-    margin-top: 50px;
-    font-size: 0.9em;
-    color: #666;
+  p.progress-text {
+    font-weight: bold;
+    text-align: right;
+    margin: 0 0 20px;
+    color: #2c3e50;
   }
 </style>
 </head>
@@ -75,77 +77,77 @@
     
     <h3>Quantitative Aptitude</h3>
     <ul id="quantList">
-      <!-- Replace these items with your Quant syllabus topics -->
-      <li><label><input type="checkbox" onchange="updateProgress()"> Number System</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Percentages</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Ratio & Proportion</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Time & Work</label></li>
+      <!-- Enter your Quant topics here by replacing the text -->
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 1</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 2</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 3</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 4</label></li>
     </ul>
     
     <h3>Reasoning</h3>
     <ul id="reasoningList">
-      <!-- Replace these items with your Reasoning syllabus topics -->
-      <li><label><input type="checkbox" onchange="updateProgress()"> Puzzle</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Seating Arrangement</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Blood Relations</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Coding-Decoding</label></li>
+      <!-- Enter your Reasoning topics here -->
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 1</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 2</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 3</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 4</label></li>
     </ul>
     
     <h3>English</h3>
     <ul id="englishList">
-      <!-- Replace these items with your English syllabus topics -->
-      <li><label><input type="checkbox" onchange="updateProgress()"> Reading Comprehension</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Grammar</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Vocabulary</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Sentence Correction</label></li>
+      <!-- Enter your English topics here -->
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 1</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 2</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 3</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 4</label></li>
     </ul>
     
     <h3>Current Affairs</h3>
     <ul id="currentAffairsList">
-      <!-- Replace these items with your Current Affairs topics -->
-      <li><label><input type="checkbox" onchange="updateProgress()"> National News</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> International News</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Banking Updates</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Government Schemes</label></li>
+      <!-- Enter your Current Affairs topics here -->
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 1</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 2</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 3</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Topic 4</label></li>
     </ul>
-
+    
     <h2>Practice Tracker</h2>
     <ul id="practiceList">
-      <!-- Replace these items with your practice tasks -->
+      <!-- Enter your Practice tasks here -->
       <li><label><input type="checkbox" onchange="updateProgress()"> Mock Test 1</label></li>
       <li><label><input type="checkbox" onchange="updateProgress()"> Mock Test 2</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Revision Quiz</label></li>
-      <li><label><input type="checkbox" onchange="updateProgress()"> Daily Practice Session</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Quiz</label></li>
+      <li><label><input type="checkbox" onchange="updateProgress()"> Revision</label></li>
     </ul>
 
     <div class="progress-bar">
       <div id="syllabusProgress" class="progress-bar-fill"></div>
     </div>
-    <p id="syllabusPercent">Syllabus Completion: 0%</p>
+    <p class="progress-text" id="syllabusPercent">Syllabus Completion: 0%</p>
     
     <div class="progress-bar">
       <div id="practiceProgress" class="progress-bar-fill"></div>
     </div>
-    <p id="practicePercent">Practice Completion: 0%</p>
+    <p class="progress-text" id="practicePercent">Practice Completion: 0%</p>
   </div>
 
 <script>
   function updateProgress() {
-    // Collect all syllabus checkboxes across subjects
-    const syllabusCheckboxes = document.querySelectorAll('#quantList input, #reasoningList input, #englishList input, #currentAffairsList input');
+    // Gather all syllabus topic checkboxes in all subjects
+    const syllabusCheckboxes = document.querySelectorAll('#quantList input[type=checkbox], #reasoningList input[type=checkbox], #englishList input[type=checkbox], #currentAffairsList input[type=checkbox]');
     let completedSyllabus = 0;
     syllabusCheckboxes.forEach(cb => { if(cb.checked) completedSyllabus++; });
-    const syllabusPercent = syllabusCheckboxes.length > 0 ? Math.round((completedSyllabus / syllabusCheckboxes.length) * 100) : 0;
+    let syllabusPercent = syllabusCheckboxes.length ? Math.round((completedSyllabus / syllabusCheckboxes.length) * 100) : 0;
     document.getElementById('syllabusProgress').style.width = syllabusPercent + '%';
-    document.getElementById('syllabusPercent').textContent = `Syllabus Completion: ${syllabusPercent}%`;
+    document.getElementById('syllabusPercent').textContent = 'Syllabus Completion: ' + syllabusPercent + '%';
 
-    // Practice checkboxes and progress
-    const practiceCheckboxes = document.querySelectorAll('#practiceList input');
+    // Gather all practice checkboxes
+    const practiceCheckboxes = document.querySelectorAll('#practiceList input[type=checkbox]');
     let completedPractice = 0;
     practiceCheckboxes.forEach(cb => { if(cb.checked) completedPractice++; });
-    const practicePercent = practiceCheckboxes.length > 0 ? Math.round((completedPractice / practiceCheckboxes.length) * 100) : 0;
+    let practicePercent = practiceCheckboxes.length ? Math.round((completedPractice / practiceCheckboxes.length) * 100) : 0;
     document.getElementById('practiceProgress').style.width = practicePercent + '%';
-    document.getElementById('practicePercent').textContent = `Practice Completion: ${practicePercent}%`;
+    document.getElementById('practicePercent').textContent = 'Practice Completion: ' + practicePercent + '%';
   }
   window.onload = updateProgress;
 </script>
