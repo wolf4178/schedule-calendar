@@ -3,856 +3,591 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Syllabus & Practice Tracker</title>
+    <title>Space Defender - Galaga Style Game</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
             overflow: hidden;
         }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .tab {
-            flex: 1;
-            padding: 20px;
-            background: none;
-            border: none;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s;
+        
+        .game-container {
             position: relative;
-        }
-
-        .tab.active {
-            background: white;
-            color: #3498db;
-            font-weight: bold;
-        }
-
-        .tab.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: #3498db;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .progress-overview {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 10px;
-        }
-
-        .progress-item {
-            text-align: center;
-        }
-
-        .progress-item h3 {
-            margin-bottom: 15px;
-            color: #2c3e50;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #28a745, #20c997);
-            border-radius: 10px;
-            transition: width 0.5s ease;
-        }
-
-        .add-section {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .add-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+            border: 3px solid #4a47e0;
             border-radius: 8px;
-            font-size: 1em;
-            min-width: 200px;
-        }
-
-        .add-input:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 500;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #28a745, #20c997);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #e74c3c, #c0392b);
-            color: white;
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-            color: white;
-        }
-
-        .subject-card {
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 10px;
-            margin-bottom: 20px;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(74, 71, 224, 0.5);
         }
-
-        .subject-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-        }
-
-        .subject-header {
-            padding: 20px;
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-bottom: 1px solid #dee2e6;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .subject-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #2c3e50;
-        }
-
-        .subject-progress {
-            font-size: 0.9em;
-            color: #6c757d;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .subject-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .action-btn {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 0.9em;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .subject-content {
-            padding: 20px;
-            display: none;
-        }
-
-        .subject-content.expanded {
+        
+        #gameCanvas {
+            background: #000;
             display: block;
-            animation: slideDown 0.3s ease;
         }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                max-height: 0;
-            }
-            to {
-                opacity: 1;
-                max-height: 500px;
-            }
-        }
-
-        .subtopic-list {
-            list-style: none;
-        }
-
-        .subtopic-item {
+        
+        .game-ui {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f8f9fa;
+            width: 800px;
+            margin-bottom: 15px;
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 8px;
+            border: 2px solid #4a47e0;
         }
-
-        .subtopic-item:last-child {
-            border-bottom: none;
+        
+        .score-container, .lives-container {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00ffff;
         }
-
-        .subtopic-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex: 1;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-        }
-
-        .subtopic-name {
-            font-size: 1em;
-            color: #495057;
-        }
-
-        .subtopic-name.completed {
-            text-decoration: line-through;
-            color: #6c757d;
-        }
-
-        .add-subtopic {
+        
+        .controls {
             margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #e9ecef;
-            display: flex;
-            gap: 10px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #4a47e0;
+            width: 800px;
         }
-
-        .hidden {
-            display: none;
+        
+        .controls p {
+            margin: 5px 0;
+            font-size: 1.1rem;
         }
-
-        .modal {
-            display: none;
-            position: fixed;
+        
+        .game-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 0 10px #4a47e0, 0 0 20px #4a47e0;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+        
+        .screen {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal.show {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 10;
         }
-
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .modal h3 {
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+        
+        .btn {
+            background: linear-gradient(to bottom, #4a47e0, #302b63);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
             margin-top: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(74, 71, 224, 0.7);
         }
-
-        @media (max-width: 768px) {
-            .progress-overview {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .add-section {
-                flex-direction: column;
-            }
-            
-            .subject-header {
-                flex-direction: column;
-                gap: 15px;
-                align-items: flex-start;
-            }
-            
-            .subject-actions {
-                align-self: flex-end;
-            }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(74, 71, 224, 0.9);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .instructions {
+            max-width: 700px;
+            text-align: center;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .game-over {
+            font-size: 4rem;
+            color: #ff4d4d;
+            text-shadow: 0 0 10px #ff0000;
+            margin-bottom: 20px;
+        }
+        
+        .final-score {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        
+        .stars {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📚 Syllabus & Practice Tracker</h1>
-            <p>Track your banking exam preparation progress</p>
+    <h1 class="game-title">SPACE DEFENDER</h1>
+    
+    <div class="game-ui">
+        <div class="score-container">SCORE: <span id="score">0</span></div>
+        <div class="lives-container">LIVES: <span id="lives">3</span></div>
+    </div>
+    
+    <div class="game-container">
+        <div class="stars" id="stars"></div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        
+        <div id="startScreen" class="screen">
+            <h2>SPACE DEFENDER</h2>
+            <div class="instructions">
+                <p>Defend Earth from alien invaders!</p>
+                <p>Use ← → keys to move and SPACEBAR to shoot.</p>
+                <p>Destroy enemy formations and avoid their attacks.</p>
+                <p>Survive as long as possible and achieve the highest score!</p>
+            </div>
+            <button id="startBtn" class="btn">START MISSION</button>
         </div>
-
-        <div class="tabs">
-            <button class="tab active" onclick="showTab('syllabus')">📖 Syllabus Tracker</button>
-            <button class="tab" onclick="showTab('practice')">💪 Practice Tracker</button>
-        </div>
-
-        <div class="content">
-            <div class="progress-overview">
-                <div class="progress-item">
-                    <h3>Syllabus Progress</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="syllabusProgress" style="width: 0%"></div>
-                    </div>
-                    <span id="syllabusPercentage">0%</span>
-                </div>
-                <div class="progress-item">
-                    <h3>Practice Progress</h3>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="practiceProgress" style="width: 0%"></div>
-                    </div>
-                    <span id="practicePercentage">0%</span>
-                </div>
-            </div>
-
-            <div id="syllabusTab">
-                <div class="add-section">
-                    <input type="text" class="add-input" id="newSubjectInput" placeholder="Enter new subject name...">
-                    <button class="btn btn-primary" onclick="addSubject()">➕ Add Subject</button>
-                </div>
-                <div id="subjectsList"></div>
-            </div>
-
-            <div id="practiceTab" class="hidden">
-                <div class="add-section">
-                    <input type="text" class="add-input" id="newPracticeInput" placeholder="Enter new practice category...">
-                    <button class="btn btn-primary" onclick="addPractice()">➕ Add Practice</button>
-                </div>
-                <div id="practiceList"></div>
-            </div>
+        
+        <div id="gameOverScreen" class="screen hidden">
+            <h2 class="game-over">MISSION FAILED</h2>
+            <p class="final-score">Final Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn" class="btn">TRY AGAIN</button>
         </div>
     </div>
-
-    <!-- Edit Modal -->
-    <div class="modal" id="editModal">
-        <div class="modal-content">
-            <h3 id="modalTitle">Edit Item</h3>
-            <input type="text" class="add-input" id="editInput" placeholder="Enter new name...">
-            <div class="modal-actions">
-                <button class="btn btn-danger" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-success" onclick="saveEdit()">Save</button>
-            </div>
-        </div>
+    
+    <div class="controls">
+        <p>CONTROLS: ← → Arrow Keys to Move | SPACEBAR to Shoot</p>
+        <p>Destroy enemies and avoid their attacks to score points!</p>
     </div>
 
     <script>
-        // Data structure
-        let syllabusData = [
-            {
-                id: 1,
-                name: "Quantitative Aptitude",
-                subTopics: [
-                    {id: 1, name: "Number Systems", completed: false},
-                    {id: 2, name: "Percentage", completed: false},
-                    {id: 3, name: "Profit and Loss", completed: false},
-                    {id: 4, name: "Simple Interest", completed: false},
-                    {id: 5, name: "Compound Interest", completed: false},
-                    {id: 6, name: "Time and Work", completed: false},
-                    {id: 7, name: "Time Speed Distance", completed: false},
-                    {id: 8, name: "Data Interpretation", completed: false}
-                ]
-            },
-            {
-                id: 2,
-                name: "Reasoning Ability",
-                subTopics: [
-                    {id: 9, name: "Logical Reasoning", completed: false},
-                    {id: 10, name: "Verbal Reasoning", completed: false},
-                    {id: 11, name: "Non-Verbal Reasoning", completed: false},
-                    {id: 12, name: "Coding-Decoding", completed: false},
-                    {id: 13, name: "Blood Relations", completed: false},
-                    {id: 14, name: "Direction Sense", completed: false},
-                    {id: 15, name: "Seating Arrangement", completed: false}
-                ]
-            },
-            {
-                id: 3,
-                name: "English Language",
-                subTopics: [
-                    {id: 16, name: "Reading Comprehension", completed: false},
-                    {id: 17, name: "Grammar", completed: false},
-                    {id: 18, name: "Vocabulary", completed: false},
-                    {id: 19, name: "Sentence Correction", completed: false},
-                    {id: 20, name: "Para Jumbles", completed: false},
-                    {id: 21, name: "Cloze Test", completed: false}
-                ]
-            },
-            {
-                id: 4,
-                name: "General Awareness",
-                subTopics: [
-                    {id: 22, name: "Current Affairs", completed: false},
-                    {id: 23, name: "Banking Awareness", completed: false},
-                    {id: 24, name: "Financial Awareness", completed: false},
-                    {id: 25, name: "Static GK", completed: false},
-                    {id: 26, name: "Indian Economy", completed: false}
-                ]
-            }
-        ];
-
-        let practiceData = [
-            {
-                id: 1,
-                name: "Daily Mock Tests",
-                subTopics: [
-                    {id: 1, name: "Full Length Test 1", completed: false},
-                    {id: 2, name: "Full Length Test 2", completed: false},
-                    {id: 3, name: "Sectional Test - Quant", completed: false},
-                    {id: 4, name: "Sectional Test - Reasoning", completed: false},
-                    {id: 5, name: "Sectional Test - English", completed: false}
-                ]
-            },
-            {
-                id: 2,
-                name: "Previous Year Papers",
-                subTopics: [
-                    {id: 6, name: "SBI PO 2023", completed: false},
-                    {id: 7, name: "IBPS PO 2023", completed: false},
-                    {id: 8, name: "SBI Clerk 2023", completed: false},
-                    {id: 9, name: "IBPS Clerk 2023", completed: false}
-                ]
-            },
-            {
-                id: 3,
-                name: "Topic-wise Practice",
-                subTopics: [
-                    {id: 10, name: "Quant - Data Interpretation", completed: false},
-                    {id: 11, name: "Reasoning - Puzzles", completed: false},
-                    {id: 12, name: "English - Reading Comprehension", completed: false}
-                ]
-            }
-        ];
-
-        let currentEditType = '';
-        let currentEditId = 0;
-        let currentEditSubId = 0;
-
-        // Initialize app
-        function init() {
-            renderSyllabus();
-            renderPractice();
-            updateProgress();
-        }
-
-        // Tab switching
-        function showTab(tabName) {
-            const syllabusTab = document.getElementById('syllabusTab');
-            const practiceTab = document.getElementById('practiceTab');
-            const tabs = document.querySelectorAll('.tab');
-            
-            tabs.forEach(tab => tab.classList.remove('active'));
-            
-            if (tabName === 'syllabus') {
-                syllabusTab.classList.remove('hidden');
-                practiceTab.classList.add('hidden');
-                tabs[0].classList.add('active');
-            } else {
-                practiceTab.classList.remove('hidden');
-                syllabusTab.classList.add('hidden');
-                tabs[1].classList.add('active');
+        // Game variables
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startScreen = document.getElementById('startScreen');
+        const gameOverScreen = document.getElementById('gameOverScreen');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const scoreElement = document.getElementById('score');
+        const finalScoreElement = document.getElementById('finalScore');
+        const livesElement = document.getElementById('lives');
+        const starsContainer = document.getElementById('stars');
+        
+        let gameActive = false;
+        let score = 0;
+        let lives = 3;
+        
+        // Create background stars
+        function createStars() {
+            starsContainer.innerHTML = '';
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                star.style.width = Math.random() * 2 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                starsContainer.appendChild(star);
             }
         }
-
-        // Render syllabus
-        function renderSyllabus() {
-            const container = document.getElementById('subjectsList');
-            container.innerHTML = '';
-
-            syllabusData.forEach(subject => {
-                const completed = subject.subTopics.filter(st => st.completed).length;
-                const total = subject.subTopics.length;
-                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-                const subjectCard = document.createElement('div');
-                subjectCard.className = 'subject-card';
-                subjectCard.innerHTML = `
-                    <div class="subject-header" onclick="toggleSubject(${subject.id})">
-                        <div class="subject-title">${subject.name}</div>
-                        <div class="subject-progress">
-                            <span>${completed}/${total} (${percentage}%)</span>
-                            <div class="subject-actions" onclick="event.stopPropagation()">
-                                <button class="action-btn btn-warning" onclick="editSubject(${subject.id})">✏️</button>
-                                <button class="action-btn btn-danger" onclick="deleteSubject(${subject.id})">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="subject-content" id="subject-${subject.id}">
-                        <ul class="subtopic-list">
-                            ${subject.subTopics.map(subTopic => `
-                                <li class="subtopic-item">
-                                    <div class="subtopic-checkbox">
-                                        <input type="checkbox" class="checkbox" ${subTopic.completed ? 'checked' : ''} 
-                                               onchange="toggleSubtopic('syllabus', ${subject.id}, ${subTopic.id})">
-                                        <span class="subtopic-name ${subTopic.completed ? 'completed' : ''}">${subTopic.name}</span>
-                                    </div>
-                                    <div class="subject-actions">
-                                        <button class="action-btn btn-warning" onclick="editSubtopic('syllabus', ${subject.id}, ${subTopic.id})">✏️</button>
-                                        <button class="action-btn btn-danger" onclick="deleteSubtopic('syllabus', ${subject.id}, ${subTopic.id})">🗑️</button>
-                                    </div>
-                                </li>
-                            `).join('')}
-                        </ul>
-                        <div class="add-subtopic">
-                            <input type="text" class="add-input" id="newSubtopic-${subject.id}" placeholder="Add new subtopic...">
-                            <button class="btn btn-success" onclick="addSubtopic('syllabus', ${subject.id})">➕ Add</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(subjectCard);
-            });
-        }
-
-        // Render practice
-        function renderPractice() {
-            const container = document.getElementById('practiceList');
-            container.innerHTML = '';
-
-            practiceData.forEach(practice => {
-                const completed = practice.subTopics.filter(st => st.completed).length;
-                const total = practice.subTopics.length;
-                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-                const practiceCard = document.createElement('div');
-                practiceCard.className = 'subject-card';
-                practiceCard.innerHTML = `
-                    <div class="subject-header" onclick="togglePractice(${practice.id})">
-                        <div class="subject-title">${practice.name}</div>
-                        <div class="subject-progress">
-                            <span>${completed}/${total} (${percentage}%)</span>
-                            <div class="subject-actions" onclick="event.stopPropagation()">
-                                <button class="action-btn btn-warning" onclick="editPractice(${practice.id})">✏️</button>
-                                <button class="action-btn btn-danger" onclick="deletePractice(${practice.id})">🗑️</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="subject-content" id="practice-${practice.id}">
-                        <ul class="subtopic-list">
-                            ${practice.subTopics.map(subTopic => `
-                                <li class="subtopic-item">
-                                    <div class="subtopic-checkbox">
-                                        <input type="checkbox" class="checkbox" ${subTopic.completed ? 'checked' : ''} 
-                                               onchange="toggleSubtopic('practice', ${practice.id}, ${subTopic.id})">
-                                        <span class="subtopic-name ${subTopic.completed ? 'completed' : ''}">${subTopic.name}</span>
-                                    </div>
-                                    <div class="subject-actions">
-                                        <button class="action-btn btn-warning" onclick="editSubtopic('practice', ${practice.id}, ${subTopic.id})">✏️</button>
-                                        <button class="action-btn btn-danger" onclick="deleteSubtopic('practice', ${practice.id}, ${subTopic.id})">🗑️</button>
-                                    </div>
-                                </li>
-                            `).join('')}
-                        </ul>
-                        <div class="add-subtopic">
-                            <input type="text" class="add-input" id="newPracticeTopic-${practice.id}" placeholder="Add new practice item...">
-                            <button class="btn btn-success" onclick="addSubtopic('practice', ${practice.id})">➕ Add</button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(practiceCard);
-            });
-        }
-
-        // Toggle subject expansion
-        function toggleSubject(id) {
-            const content = document.getElementById(`subject-${id}`);
-            content.classList.toggle('expanded');
-        }
-
-        // Toggle practice expansion
-        function togglePractice(id) {
-            const content = document.getElementById(`practice-${id}`);
-            content.classList.toggle('expanded');
-        }
-
-        // Toggle subtopic completion
-        function toggleSubtopic(type, subjectId, subtopicId) {
-            const data = type === 'syllabus' ? syllabusData : practiceData;
-            const subject = data.find(s => s.id === subjectId);
-            const subtopic = subject.subTopics.find(st => st.id === subtopicId);
-            
-            subtopic.completed = !subtopic.completed;
-            
-            if (type === 'syllabus') {
-                renderSyllabus();
-            } else {
-                renderPractice();
-            }
-            updateProgress();
-        }
-
-        // Add new subject
-        function addSubject() {
-            const input = document.getElementById('newSubjectInput');
-            const name = input.value.trim();
-            
-            if (name) {
-                const newId = Math.max(...syllabusData.map(s => s.id), 0) + 1;
-                syllabusData.push({
-                    id: newId,
-                    name: name,
-                    subTopics: []
-                });
+        
+        // Player object
+        const player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 80,
+            width: 50,
+            height: 60,
+            speed: 7,
+            color: '#4a47e0',
+            draw: function() {
+                // Draw player ship
+                ctx.fillStyle = this.color;
                 
-                input.value = '';
-                renderSyllabus();
-                updateProgress();
-            }
-        }
-
-        // Add new practice
-        function addPractice() {
-            const input = document.getElementById('newPracticeInput');
-            const name = input.value.trim();
-            
-            if (name) {
-                const newId = Math.max(...practiceData.map(p => p.id), 0) + 1;
-                practiceData.push({
-                    id: newId,
-                    name: name,
-                    subTopics: []
-                });
+                // Ship body
+                ctx.beginPath();
+                ctx.moveTo(this.x + this.width / 2, this.y);
+                ctx.lineTo(this.x + this.width, this.y + this.height - 20);
+                ctx.lineTo(this.x, this.y + this.height - 20);
+                ctx.closePath();
+                ctx.fill();
                 
-                input.value = '';
-                renderPractice();
-                updateProgress();
-            }
-        }
-
-        // Add subtopic
-        function addSubtopic(type, subjectId) {
-            const inputId = type === 'syllabus' ? `newSubtopic-${subjectId}` : `newPracticeTopic-${subjectId}`;
-            const input = document.getElementById(inputId);
-            const name = input.value.trim();
-            
-            if (name) {
-                const data = type === 'syllabus' ? syllabusData : practiceData;
-                const subject = data.find(s => s.id === subjectId);
+                // Ship wings
+                ctx.fillRect(this.x - 10, this.y + this.height - 40, 70, 10);
                 
-                const newId = Math.max(...subject.subTopics.map(st => st.id), 0) + 1;
-                subject.subTopics.push({
-                    id: newId,
-                    name: name,
-                    completed: false
-                });
+                // Ship details
+                ctx.fillStyle = '#00ffff';
+                ctx.fillRect(this.x + this.width / 2 - 5, this.y + 10, 10, 20);
                 
-                input.value = '';
+                // Engine glow
+                const gradient = ctx.createRadialGradient(
+                    this.x + this.width / 2, this.y + this.height, 0,
+                    this.x + this.width / 2, this.y + this.height, 20
+                );
+                gradient.addColorStop(0, '#00ffff');
+                gradient.addColorStop(1, 'transparent');
                 
-                if (type === 'syllabus') {
-                    renderSyllabus();
-                } else {
-                    renderPractice();
+                ctx.fillStyle = gradient;
+                ctx.fillRect(this.x + this.width / 2 - 15, this.y + this.height, 30, 25);
+            },
+            move: function(direction) {
+                if (direction === 'left' && this.x > 0) {
+                    this.x -= this.speed;
                 }
-                updateProgress();
-            }
-        }
-
-        // Edit functions
-        function editSubject(id) {
-            const subject = syllabusData.find(s => s.id === id);
-            showEditModal('Edit Subject', subject.name, 'subject', id);
-        }
-
-        function editPractice(id) {
-            const practice = practiceData.find(p => p.id === id);
-            showEditModal('Edit Practice', practice.name, 'practice', id);
-        }
-
-        function editSubtopic(type, subjectId, subtopicId) {
-            const data = type === 'syllabus' ? syllabusData : practiceData;
-            const subject = data.find(s => s.id === subjectId);
-            const subtopic = subject.subTopics.find(st => st.id === subtopicId);
-            showEditModal('Edit Subtopic', subtopic.name, `${type}-subtopic`, subjectId, subtopicId);
-        }
-
-        function showEditModal(title, currentValue, type, id, subId = 0) {
-            currentEditType = type;
-            currentEditId = id;
-            currentEditSubId = subId;
-            
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('editInput').value = currentValue;
-            document.getElementById('editModal').classList.add('show');
-        }
-
-        function closeModal() {
-            document.getElementById('editModal').classList.remove('show');
-        }
-
-        function saveEdit() {
-            const newValue = document.getElementById('editInput').value.trim();
-            if (!newValue) return;
-            
-            if (currentEditType === 'subject') {
-                const subject = syllabusData.find(s => s.id === currentEditId);
-                subject.name = newValue;
-                renderSyllabus();
-            } else if (currentEditType === 'practice') {
-                const practice = practiceData.find(p => p.id === currentEditId);
-                practice.name = newValue;
-                renderPractice();
-            } else if (currentEditType === 'syllabus-subtopic') {
-                const subject = syllabusData.find(s => s.id === currentEditId);
-                const subtopic = subject.subTopics.find(st => st.id === currentEditSubId);
-                subtopic.name = newValue;
-                renderSyllabus();
-            } else if (currentEditType === 'practice-subtopic') {
-                const practice = practiceData.find(p => p.id === currentEditId);
-                const subtopic = practice.subTopics.find(st => st.id === currentEditSubId);
-                subtopic.name = newValue;
-                renderPractice();
-            }
-            
-            closeModal();
-        }
-
-        // Delete functions
-        function deleteSubject(id) {
-            if (confirm('Are you sure you want to delete this subject?')) {
-                syllabusData = syllabusData.filter(s => s.id !== id);
-                renderSyllabus();
-                updateProgress();
-            }
-        }
-
-        function deletePractice(id) {
-            if (confirm('Are you sure you want to delete this practice category?')) {
-                practiceData = practiceData.filter(p => p.id !== id);
-                renderPractice();
-                updateProgress();
-            }
-        }
-
-        function deleteSubtopic(type, subjectId, subtopicId) {
-            if (confirm('Are you sure you want to delete this item?')) {
-                const data = type === 'syllabus' ? syllabusData : practiceData;
-                const subject = data.find(s => s.id === subjectId);
-                subject.subTopics = subject.subTopics.filter(st => st.id !== subtopicId);
-                
-                if (type === 'syllabus') {
-                    renderSyllabus();
-                } else {
-                    renderPractice();
+                if (direction === 'right' && this.x + this.width < canvas.width) {
+                    this.x += this.speed;
                 }
-                updateProgress();
             }
-        }
-
-        // Update progress
-        function updateProgress() {
-            // Syllabus progress
-            const totalSyllabusItems = syllabusData.reduce((total, subject) => total + subject.subTopics.length, 0);
-            const completedSyllabusItems = syllabusData.reduce((total, subject) => 
-                total + subject.subTopics.filter(st => st.completed).length, 0);
-            
-            const syllabusPercentage = totalSyllabusItems > 0 ? Math.round((completedSyllabusItems / totalSyllabusItems) * 100) : 0;
-            
-            document.getElementById('syllabusProgress').style.width = syllabusPercentage + '%';
-            document.getElementById('syllabusPercentage').textContent = syllabusPercentage + '%';
-            
-            // Practice progress
-            const totalPracticeItems = practiceData.reduce((total, practice) => total + practice.subTopics.length, 0);
-            const completedPracticeItems = practiceData.reduce((total, practice) => 
-                total + practice.subTopics.filter(st => st.completed).length, 0);
-            
-            const practicePercentage = totalPracticeItems > 0 ? Math.round((completedPracticeItems / totalPracticeItems) * 100) : 0;
-            
-            document.getElementById('practiceProgress').style.width = practicePercentage + '%';
-            document.getElementById('practicePercentage').textContent = practicePercentage + '%';
-        }
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-            if (e.key === 'Enter' && document.getElementById('editModal').classList.contains('show')) {
-                saveEdit();
+        };
+        
+        // Bullets array
+        let bullets = [];
+        
+        // Enemy array
+        let enemies = [];
+        
+        // Enemy bullets array
+        let enemyBullets = [];
+        
+        // Key state tracking
+        const keys = {
+            ArrowLeft: false,
+            ArrowRight: false,
+            Space: false
+        };
+        
+        // Event listeners
+        window.addEventListener('keydown', (e) => {
+            if (e.code in keys) {
+                keys[e.code] = true;
+                e.preventDefault();
             }
         });
-
-        // Initialize the app
-        init();
+        
+        window.addEventListener('keyup', (e) => {
+            if (e.code in keys) {
+                keys[e.code] = false;
+                
+                // Fire bullet when spacebar is released
+                if (e.code === 'Space' && gameActive) {
+                    fireBullet();
+                }
+            }
+        });
+        
+        // Fire a bullet
+        function fireBullet() {
+            bullets.push({
+                x: player.x + player.width / 2 - 2,
+                y: player.y,
+                width: 4,
+                height: 15,
+                speed: 10,
+                color: '#00ffff'
+            });
+        }
+        
+        // Create enemies
+        function createEnemies() {
+            enemies = [];
+            const rows = 4;
+            const cols = 8;
+            const enemyWidth = 40;
+            const enemyHeight = 40;
+            const padding = 20;
+            const offsetX = (canvas.width - (cols * (enemyWidth + padding))) / 2;
+            const offsetY = 80;
+            
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    enemies.push({
+                        x: offsetX + col * (enemyWidth + padding),
+                        y: offsetY + row * (enemyHeight + padding),
+                        width: enemyWidth,
+                        height: enemyHeight,
+                        speed: 1,
+                        direction: 1,
+                        color: row === 0 ? '#ff4d4d' : row === 1 ? '#ff9933' : row === 2 ? '#ffff33' : '#33ff33',
+                        alive: true
+                    });
+                }
+            }
+        }
+        
+        // Enemy firing
+        function enemyFire() {
+            if (!gameActive || enemies.length === 0) return;
+            
+            // Find the lowest enemies in each column for more strategic firing
+            const columns = {};
+            enemies.forEach(enemy => {
+                if (enemy.alive) {
+                    const col = Math.floor(enemy.x / 50);
+                    if (!columns[col] || enemy.y > columns[col].y) {
+                        columns[col] = enemy;
+                    }
+                }
+            });
+            
+            // Randomly select an enemy to fire
+            const columnKeys = Object.keys(columns);
+            if (columnKeys.length > 0) {
+                const randomCol = columnKeys[Math.floor(Math.random() * columnKeys.length)];
+                const shooter = columns[randomCol];
+                
+                enemyBullets.push({
+                    x: shooter.x + shooter.width / 2 - 2,
+                    y: shooter.y + shooter.height,
+                    width: 4,
+                    height: 15,
+                    speed: 5,
+                    color: '#ff4d4d'
+                });
+            }
+        }
+        
+        // Check collisions
+        function checkCollisions() {
+            // Player bullets vs enemies
+            bullets.forEach((bullet, bulletIndex) => {
+                enemies.forEach((enemy, enemyIndex) => {
+                    if (enemy.alive &&
+                        bullet.x < enemy.x + enemy.width &&
+                        bullet.x + bullet.width > enemy.x &&
+                        bullet.y < enemy.y + enemy.height &&
+                        bullet.y + bullet.height > enemy.y) {
+                        
+                        // Collision detected
+                        bullets.splice(bulletIndex, 1);
+                        enemy.alive = false;
+                        score += 100;
+                        scoreElement.textContent = score;
+                    }
+                });
+            });
+            
+            // Enemy bullets vs player
+            enemyBullets.forEach((bullet, bulletIndex) => {
+                if (bullet.x < player.x + player.width &&
+                    bullet.x + bullet.width > player.x &&
+                    bullet.y < player.y + player.height &&
+                    bullet.y + bullet.height > player.y) {
+                    
+                    // Player hit
+                    enemyBullets.splice(bulletIndex, 1);
+                    lives--;
+                    livesElement.textContent = lives;
+                    
+                    if (lives <= 0) {
+                        gameOver();
+                    }
+                }
+            });
+            
+            // Enemies vs player (game over condition)
+            enemies.forEach(enemy => {
+                if (enemy.alive &&
+                    enemy.x < player.x + player.width &&
+                    enemy.x + enemy.width > player.x &&
+                    enemy.y < player.y + player.height &&
+                    enemy.y + enemy.height > player.y) {
+                    
+                    gameOver();
+                }
+            });
+        }
+        
+        // Update game state
+        function update() {
+            if (!gameActive) return;
+            
+            // Move player
+            if (keys.ArrowLeft) player.move('left');
+            if (keys.ArrowRight) player.move('right');
+            
+            // Move bullets
+            bullets.forEach((bullet, index) => {
+                bullet.y -= bullet.speed;
+                if (bullet.y < 0) {
+                    bullets.splice(index, 1);
+                }
+            });
+            
+            // Move enemy bullets
+            enemyBullets.forEach((bullet, index) => {
+                bullet.y += bullet.speed;
+                if (bullet.y > canvas.height) {
+                    enemyBullets.splice(index, 1);
+                }
+            });
+            
+            // Move enemies
+            let changeDirection = false;
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                
+                enemy.x += enemy.speed * enemy.direction;
+                
+                if (enemy.x <= 0 || enemy.x + enemy.width >= canvas.width) {
+                    changeDirection = true;
+                }
+            });
+            
+            // Change enemy direction if needed
+            if (changeDirection) {
+                enemies.forEach(enemy => {
+                    if (enemy.alive) {
+                        enemy.direction *= -1;
+                        enemy.y += 20;
+                    }
+                });
+            }
+            
+            // Random enemy firing
+            if (Math.random() < 0.02) {
+                enemyFire();
+            }
+            
+            // Check for collisions
+            checkCollisions();
+            
+            // Check if all enemies are destroyed
+            const aliveEnemies = enemies.filter(enemy => enemy.alive);
+            if (aliveEnemies.length === 0) {
+                createEnemies();
+                score += 500; // Bonus for clearing a wave
+                scoreElement.textContent = score;
+            }
+            
+            // Check if enemies reached the bottom
+            enemies.forEach(enemy => {
+                if (enemy.alive && enemy.y + enemy.height >= canvas.height - 50) {
+                    gameOver();
+                }
+            });
+        }
+        
+        // Draw everything
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw player
+            player.draw();
+            
+            // Draw bullets
+            bullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                
+                // Add glow effect
+                ctx.shadowColor = bullet.color;
+                ctx.shadowBlur = 10;
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                ctx.shadowBlur = 0;
+            });
+            
+            // Draw enemy bullets
+            enemyBullets.forEach(bullet => {
+                ctx.fillStyle = bullet.color;
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                
+                // Add glow effect
+                ctx.shadowColor = bullet.color;
+                ctx.shadowBlur = 10;
+                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                ctx.shadowBlur = 0;
+            });
+            
+            // Draw enemies
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                
+                ctx.fillStyle = enemy.color;
+                
+                // Enemy body
+                ctx.beginPath();
+                ctx.moveTo(enemy.x, enemy.y);
+                ctx.lineTo(enemy.x + enemy.width, enemy.y);
+                ctx.lineTo(enemy.x + enemy.width - 10, enemy.y + enemy.height);
+                ctx.lineTo(enemy.x + 10, enemy.y + enemy.height);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Enemy details
+                ctx.fillStyle = '#000';
+                ctx.fillRect(enemy.x + 5, enemy.y + 5, 10, 10);
+                ctx.fillRect(enemy.x + enemy.width - 15, enemy.y + 5, 10, 10);
+                ctx.fillRect(enemy.x + 15, enemy.y + 20, 10, 5);
+                ctx.fillRect(enemy.x + enemy.width - 25, enemy.y + 20, 10, 5);
+            });
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            if (gameActive) {
+                requestAnimationFrame(gameLoop);
+            }
+        }
+        
+        // Start game
+        function startGame() {
+            gameActive = true;
+            score = 0;
+            lives = 3;
+            bullets = [];
+            enemyBullets = [];
+            
+            scoreElement.textContent = score;
+            livesElement.textContent = lives;
+            
+            startScreen.classList.add('hidden');
+            gameOverScreen.classList.add('hidden');
+            
+            createEnemies();
+            gameLoop();
+        }
+        
+        // Game over
+        function gameOver() {
+            gameActive = false;
+            finalScoreElement.textContent = score;
+            gameOverScreen.classList.remove('hidden');
+        }
+        
+        // Event listeners for buttons
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', startGame);
+        
+        // Initialize stars
+        createStars();
     </script>
 </body>
 </html>
